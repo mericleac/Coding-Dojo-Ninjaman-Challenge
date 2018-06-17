@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NinjaMan</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .wall {
+            background-color: blue;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            margin-bottom: -4px;
+        }
+        .sushi {
+            background-color: black;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            background-image: url(img/sushi.png);
+            background-size: cover;
+            margin-bottom: -4px;
+        }
+        .onigiri {
+            background-color: black;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            background-image: url(img/onigiri.png);
+            background-size: cover;
+            margin-bottom: -4px;
+        }
+        .blank {
+            background-color: black;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            margin-bottom: -4px;
+        }
+        #ninjaman {
+            background-color: black;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            background-image: url(img/ninja.gif);
+            background-size: cover;
+            position: absolute;
+            top: 40px;
+            left: 40px;
+        }
+        #pumpky {
+            background-color: black;
+            height: 40px;
+            width: 40px;
+            display: inline-block;
+            background-image: url(img/pumpky.gif);
+            background-size: cover;
+            position: absolute;
+            top: 200px;
+            left: 200px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id= "world"></div>
+    <div id="ninjaman"></div>
+    <div id="pumpky"></div>
+    <div id="score"></div>
+    <div id="lives"></div>
+
+    <script type='text/javascript'>
+        
+        var world = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 3, 2, 3, 2, 3, 2, 3, 2, 1],
+            [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1],
+            [1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 1],
+            [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1],
+            [1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 1],
+            [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1],
+            [1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 1],
+            [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1],
+            [1, 2, 3, 2, 3, 2, 3, 2, 3, 2, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        // var world = [
+        //     [1, 1, 1, 1, 1, 1, 1]
+        // ];
+
+        // for (let i = 1; i <= 9; i++) {
+        //     let row = [1];
+
+        //     for (let i = 1; i <= 5; i++) {
+        //         row.push(Math.ceil(Math.random() * 3));
+        //     }
+
+        //     row.push(1);
+
+        //     world.push(row);
+        // }
+
+        // world.push([1, 1, 1, 1, 1, 1, 1]);
+
+        var worldDict = {
+            0 : 'blank',
+            1 : 'wall',
+            2 : 'sushi',
+            3 : 'onigiri'
+        }
+
+        let score = 0;
+        let lives = 3;
+
+        function createWorld () {
+            let output = '';
+
+            for (let row = 0; row < world.length; ++row) {
+                let currentRow = world[row];
+                output += "<div class=row>";
+
+                currentRow.forEach(function (classVal, column) {
+                    output += `<div class="${worldDict[classVal]}"></div>`;
+                });
+
+                output += "</div>";
+            }
+
+            document.getElementById('world').innerHTML = output;
+            document.getElementById('score').innerHTML = `Score = ${score}`;
+            document.getElementById('lives').innerHTML = `Lives = ${lives}`;
+        }
+
+        createWorld();
+
+        let ninjaman = {
+            x : 1,
+            y : 1,
+        }
+
+        let pumpky = {
+            x : 5,
+            y : 5,
+        }
+        
+        function update () {
+			document.getElementById('ninjaman').style.left = ninjaman.x * 40 + 'px';
+			document.getElementById('ninjaman').style.top = ninjaman.y * 40 + 'px';
+
+            let temp = Math.floor(Math.random() * 4);
+            if (temp === 0 && world[pumpky.y][pumpky.x - 1] !== 1) {
+                pumpky.x--;
+            } else if (temp === 1 && world[pumpky.y - 1][pumpky.x] !== 1) {
+                pumpky.y--;
+            } else if (temp === 2 && world[pumpky.y][pumpky.x + 1] !== 1) {
+                pumpky.x++;
+            } else if (world[pumpky.y + 1][pumpky.x] !== 1) {
+                pumpky.y++;
+            }
+
+            document.getElementById('pumpky').style.left = pumpky.x * 40 + 'px';
+			document.getElementById('pumpky').style.top = pumpky.y * 40 + 'px';
+
+            if (ninjaman.x === pumpky.x && ninjaman.y === pumpky.y) {
+                lives--;
+            }
+
+            if (lives === 0) {
+                alert("Game Over!");
+            }
+            
+            if (world[ninjaman.y][ninjaman.x] === 2) score += 10;
+            else if (world[ninjaman.y][ninjaman.x] === 3) score += 5;
+            world[ninjaman.y][ninjaman.x] = 0;
+
+            createWorld();
+		}
+
+        document.onkeydown = (key) => {
+			//left arrow key
+			if (key.keyCode === 37 && world[ninjaman.y][ninjaman.x - 1] !== 1) {
+				ninjaman.x--;
+			}
+			//up arrow key
+			else if (key.keyCode === 38 && world[ninjaman.y - 1][ninjaman.x] !== 1) {
+				ninjaman.y--;
+			}
+			//right arrow key
+			else if (key.keyCode === 39 && world[ninjaman.y][ninjaman.x + 1] !== 1) {
+				ninjaman.x++;
+			}
+			//down arrow key
+			else if (key.keyCode ===    40 && world[ninjaman.y + 1][ninjaman.x] !== 1) {
+				ninjaman.y++;
+			}
+
+            update();
+        }
+
+    </script>
+</body>
+</html>
